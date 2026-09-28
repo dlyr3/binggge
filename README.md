@@ -56,7 +56,10 @@ curl localhost:3000/watchlist   # sans en-tête : 401
 ## Tests
 
 ```bash
+docker compose up -d
 cd api && npm test
 ```
 
-Les tests de la séance 2 sont pour l'instant à l'état `todo` : ils n'échouent pas mais ne vérifient rien encore.
+Les tests joignent la base du conteneur via `DATABASE_URL` (fichier `.env`) et nettoient ce qu'ils créent.
+Ils vérifient que `/health` répond 200, qu'une inscription crée l'utilisateur, qu'une série ajoutée apparaît
+dans `/watchlist`, et que `/watchlist` sans en-tête renvoie 401.
