@@ -53,6 +53,7 @@ app.get('/watchlist', user, async (req, res) => {
 
 app.post('/watchlist', user, async (req, res) => {
   const { show_id, title } = req.body ?? {};
+  if (typeof title !== 'string' || !title.trim()) return res.status(400).json({ error: 'titre requis' });
   const { rows } = await db.query(
     'INSERT INTO watchlist(user_id, show_id, title) VALUES($1, $2, $3) RETURNING id, show_id, title, seen',
     [req.userId, show_id, title],
