@@ -5,17 +5,25 @@ Un suivi de séries : chercher une série, l'ajouter à sa liste, cocher les ép
 ## Démarrer
 
 ```bash
-cp .env.example .env && docker compose up -d
-cd api && npm install && npm start
+cp .env.example .env            # choisir un DB_PASS long, le reporter dans DATABASE_URL
+docker compose up -d --build    # l'API répond sur http://localhost:3000
 ```
 
-L'API écoute sur le port 3000 par défaut, surchargeable avec la variable d'environnement `PORT`.
-Elle joint la base via `DATABASE_URL`, lue dans le fichier `.env` à la racine (jamais versionné).
+Deux conteneurs : `api` (image construite depuis `api/Dockerfile`, Node 24) et `db` (PostgreSQL 16).
+L'API joint la base par le nom de service `db`, pas par `localhost`.
+
+Le mot de passe de la base vient du fichier `.env` (`DB_PASS`), jamais versionné. `.env.example` montre
+les variables attendues.
+
+`docker-compose.yml` ne publie aucun port : sur le serveur, Traefik joint le conteneur sur le réseau Docker.
+En local, `docker-compose.override.yml`, lu automatiquement par `docker compose`, publie l'API sur 3000 et
+la base sur 5432. Le serveur l'ignore en lançant `docker compose -f docker-compose.yml`.
+
+Pour lancer l'API hors conteneur : `cd api && npm install && npm start` (elle lit `DATABASE_URL` dans `.env`).
 
 ## Base de données
 
-PostgreSQL 16 tourne dans un conteneur décrit par `docker-compose.yml`. Le volume `pgdata` garde les
-données entre un `docker compose down` et un `docker compose up`.
+Le volume `pgdata` garde les données entre un `docker compose down` et un `docker compose up`.
 
 Le schéma est versionné dans `api/db/schema.sql`. PostgreSQL l'applique tout seul à la création du volume.
 Pour l'appliquer à un volume existant :
@@ -57,7 +65,7 @@ curl localhost:3000/watchlist   # sans en-tête : 401
 
 ```bash
 docker compose up -d
-cd api && npm test
+cd api && npm install && npm test
 ```
 
 Les tests joignent la base du conteneur via `DATABASE_URL` (fichier `.env`) et nettoient ce qu'ils créent.

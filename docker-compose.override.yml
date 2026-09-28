@@ -1,0 +1,6 @@
+# Lu automatiquement par docker compose en local, jamais sur le serveur (qui lance -f docker-compose.yml).
+services:
+  api:
+    ports: ["3000:3000"]
+  db:
+    ports: ["5432:5432"]
