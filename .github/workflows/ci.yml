@@ -29,3 +29,10 @@ jobs:
       - run: psql "$DATABASE_URL" -f db/schema.sql
       - run: npm ci
       - run: npm test
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: docker build -t binggge-api:${GITHUB_SHA::7} ./api
