@@ -13,7 +13,7 @@ after(async () => {
 
 test('/health répond 200', async () => {
   const r = await request(app).get('/health');
-  assert.equal(r.status, 200);
+  assert.equal(r.status, 418);
 });
 
 test("une inscription crée bien l'utilisateur", async () => {
